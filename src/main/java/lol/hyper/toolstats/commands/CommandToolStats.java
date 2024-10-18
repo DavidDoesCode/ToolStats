@@ -400,6 +400,11 @@ public class CommandToolStats implements TabExecutor {
                     return Collections.singletonList("confirm");
                 }
             }
+            if (args[0].equalsIgnoreCase("remove")) {
+                if (sender.hasPermission("toolstats.remove.confirm")) {
+                    return Collections.singletonList("confirm");
+                }
+            }
         }
         return null;
     }
