@@ -18,6 +18,7 @@
 package lol.hyper.toolstats.events;
 
 import lol.hyper.toolstats.ToolStats;
+import lol.hyper.toolstats.tools.ItemLore;
 import lol.hyper.toolstats.tools.UUIDDataType;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -121,7 +122,7 @@ public class CraftItem implements Listener {
             lore = new ArrayList<>();
         }
         // do we add the lore based on the config?
-        if (toolStats.configTools.checkConfig(itemStack.getType(), "created-date")) {
+        if (ItemLore.shouldAddItemLore(owner, itemStack, "created-date", toolStats)) {
             String date = toolStats.numberFormat.formatDate(finalDate);
             String newLine = toolStats.configTools.formatLore("created.created-on", "{date}", date);
             if (newLine == null) {
@@ -130,7 +131,7 @@ public class CraftItem implements Listener {
             lore.add(newLine);
             meta.setLore(lore);
         }
-        if (toolStats.configTools.checkConfig(itemStack.getType(), "created-by")) {
+        if (ItemLore.shouldAddItemLore(owner, itemStack, "created-by", toolStats)) {
             String newLine = toolStats.configTools.formatLore("created.created-by", "{player}", owner.getName());
             if (newLine == null) {
                 return null;

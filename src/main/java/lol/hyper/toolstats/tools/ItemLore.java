@@ -18,6 +18,10 @@
 package lol.hyper.toolstats.tools;
 
 import lol.hyper.toolstats.ToolStats;
+import lol.hyper.toolstats.controller.PlayerToggleLoreController;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -202,5 +206,11 @@ public class ItemLore {
         newLore.add(dateCreatedLore.replace("{date}", formattedDate));
         newLore.add(itemOwnerLore.replace("{player}", playerName));
         return newLore;
+    }
+
+    public static Boolean shouldAddItemLore(Player player, ItemStack material,String configName, ToolStats toolStats) {
+        if(!PlayerToggleLoreController.getInstance().isPlayerAddLoreEnabled(player))
+            return false;
+        return toolStats.configTools.checkConfig(material.getType(), configName);
     }
 }

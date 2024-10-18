@@ -18,6 +18,7 @@
 package lol.hyper.toolstats.commands;
 
 import lol.hyper.toolstats.ToolStats;
+import lol.hyper.toolstats.controller.PlayerToggleLoreController;
 import lol.hyper.toolstats.tools.UUIDDataType;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
@@ -97,6 +98,20 @@ public class CommandToolStats implements TabExecutor {
                 audiences.sender(sender).sendMessage(Component.text("If the owner of the item is broken, it will reset to the person holding it.", NamedTextColor.GREEN));
                 audiences.sender(sender).sendMessage(Component.text("Only use this if the tags on the tool are incorrect.", NamedTextColor.GREEN));
                 audiences.sender(sender).sendMessage(Component.text("Type /toolstats reset confirm to confirm this.", NamedTextColor.GREEN));
+                return true;
+            }
+            case "toggle": {
+                if (!sender.hasPermission("toolstats.toggle")) {
+                    audiences.sender(sender).sendMessage(Component.text("You do not have permission for this command.", NamedTextColor.RED));
+                    return true;
+                }
+                if (sender instanceof ConsoleCommandSender) {
+                    audiences.sender(sender).sendMessage(Component.text("You must be a player for this command.", NamedTextColor.RED));
+                    return true;
+                }
+                PlayerToggleLoreController.getInstance().togglePlayer((Player) sender);
+                audiences.sender(sender).sendMessage(Component.text("Player Lore Status toggled to: " +
+                        PlayerToggleLoreController.getInstance().isPlayerAddLoreEnabled((Player) sender), NamedTextColor.GREEN));
                 return true;
             }
             case "remove": {
@@ -364,15 +379,20 @@ public class CommandToolStats implements TabExecutor {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
+            List<String> first = new ArrayList<>();
             if (sender.hasPermission("toolstats.reload")) {
-                return Arrays.asList("reset", "reload");
+                first.add("reload");
             }
             if (sender.hasPermission("toolstats.reset")) {
-                return Collections.singletonList("reset");
+                first.add("reset");
             }
             if (sender.hasPermission("toolstats.remove")) {
-                return Collections.singletonList("remove");
+                first.add("remove");
             }
+            if (sender.hasPermission("toolstats.toggle")) {
+                first.add("toggle");
+            }
+            return first;
         }
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("reset")) {

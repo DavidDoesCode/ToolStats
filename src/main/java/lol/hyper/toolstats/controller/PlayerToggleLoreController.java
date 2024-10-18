@@ -6,11 +6,11 @@ import java.util.HashMap;
 
 public class PlayerToggleLoreController {
 
-    private PlayerToggleLoreController instance;
+    private static PlayerToggleLoreController instance;
 
     private HashMap<String, Boolean> playerAddLoreConfigs = new HashMap<>();
 
-    public PlayerToggleLoreController getInstance() {
+    public static PlayerToggleLoreController getInstance() {
         if (instance == null)
             instance = new PlayerToggleLoreController();
 
