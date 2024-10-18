@@ -18,6 +18,8 @@
 package lol.hyper.toolstats.events;
 
 import lol.hyper.toolstats.ToolStats;
+import lol.hyper.toolstats.controller.PlayerToggleLoreController;
+import lol.hyper.toolstats.tools.ItemLore;
 import lol.hyper.toolstats.tools.UUIDDataType;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -105,7 +107,9 @@ public class CreativeEvent implements Listener {
         if (toolStats.configTools.checkConfig(newSpawnedItem.getType(), "spawned-in")) {
             String formattedDate = toolStats.numberFormat.formatDate(finalDate);
             List<String> newLore = toolStats.itemLore.addNewOwner(meta, owner.getName(), formattedDate);
-            meta.setLore(newLore);
+
+            if(PlayerToggleLoreController.getInstance().isPlayerAddLoreEnabled(owner))
+                meta.setLore(newLore);
         }
 
         newSpawnedItem.setItemMeta(meta);
