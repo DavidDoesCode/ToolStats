@@ -143,10 +143,16 @@ public class VillagerTrade implements Listener {
             container.set(toolStats.hash, PersistentDataType.STRING, hash);
         }
 
-        container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
+        if(!owner.hasPermission("toolstats.disable.trade.createdate"))
+            container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
+
         container.set(toolStats.itemOwner, new UUIDDataType(), owner.getUniqueId());
         container.set(toolStats.originType, PersistentDataType.INTEGER, 3);
-        String formattedDate = toolStats.numberFormat.formatDate(finalDate);
+
+        String formattedDate = owner.hasPermission("toolstats.disable.trade.createdate") ?
+                null
+                : toolStats.numberFormat.formatDate(finalDate);
+
         List<Component> newLore = toolStats.itemLore.addNewOwner(meta, owner.getName(), formattedDate);
         meta.lore(newLore);
         newItem.setItemMeta(meta);

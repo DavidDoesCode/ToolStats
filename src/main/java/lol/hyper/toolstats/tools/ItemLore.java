@@ -222,7 +222,8 @@ public class ItemLore {
             newLore = new ArrayList<>();
         }
 
-        newLore.add(dateCreatedLore);
+        if(formattedDate != null)
+            newLore.add(dateCreatedLore);
         newLore.add(itemOwnerLore);
         return newLore;
     }

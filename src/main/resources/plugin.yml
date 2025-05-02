@@ -26,3 +26,9 @@ permissions:
   toolstats.givetokens:
     description: Allows the usage of /toolstats givetoken.
     default: op
+  toolstats.disable.craft.createdate:
+    description: Allows crafting without timestamp
+    default: false
+  toolstats.disable.trade.createdate:
+    description: Allows trading without timestamp
+    default: false
