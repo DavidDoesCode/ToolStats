@@ -140,7 +140,7 @@ public class CraftItem implements Listener {
 
         // if creation date is enabled, add it
         if (toolStats.configTools.checkConfig(itemStack.getType(), "created-date")
-                && !owner.hasPermission("toolstats.disable.createdate")) {
+                && !owner.hasPermission("toolstats.disable.craft.createdate")) {
             container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
             container.set(toolStats.originType, PersistentDataType.INTEGER, 0);
 
