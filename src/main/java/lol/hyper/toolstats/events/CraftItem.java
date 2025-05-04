@@ -85,7 +85,7 @@ public class CraftItem implements Listener {
                         // if the slot was empty before we crafted, this means we just made it
                         if (oldSlotItem == null) {
                             // add the lore
-                            ItemStack newItem = addCraftOrigin(newSlotItem, player);
+                            ItemStack newItem = addCraftOrigin(newSlotItem, player, true);
                             if (newItem != null) {
                                 player.getInventory().setItem(i, newItem);
                             }
@@ -97,7 +97,7 @@ public class CraftItem implements Listener {
         }
 
         // the player did not shift click
-        ItemStack newItem = addCraftOrigin(craftedItem, player);
+        ItemStack newItem = addCraftOrigin(craftedItem, player, false);
         if (newItem != null) {
             // set the result
             event.setCurrentItem(newItem);
@@ -111,7 +111,7 @@ public class CraftItem implements Listener {
      * @param owner     The player crafting.
      * @return A copy of the item with the tags + lore.
      */
-    private ItemStack addCraftOrigin(ItemStack itemStack, Player owner) {
+    private ItemStack addCraftOrigin(ItemStack itemStack, Player owner, Boolean isShiftClick) {
         // clone the item
         ItemStack newItem = itemStack.clone();
         ItemMeta meta = newItem.getItemMeta();
@@ -140,7 +140,7 @@ public class CraftItem implements Listener {
 
         // if creation date is enabled, add it
         if (toolStats.configTools.checkConfig(itemStack.getType(), "created-date")
-                && !owner.hasPermission("toolstats.disable.craft.createdate")) {
+                && !(isShiftClick && owner.hasPermission("toolstats.disable.shiftcraft.createdate"))) {
             container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
             container.set(toolStats.originType, PersistentDataType.INTEGER, 0);
 

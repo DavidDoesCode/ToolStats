@@ -94,7 +94,7 @@ public class VillagerTrade implements Listener {
                         // if the slot was empty before we traded, this means we just traded it
                         if (oldSlotItem == null) {
                             // add the lore
-                            ItemStack newItem = addTradeOrigin(newSlotItem, player);
+                            ItemStack newItem = addTradeOrigin(newSlotItem, player, true);
                             if (newItem != null) {
                                 player.getInventory().setItem(i, newItem);
                             }
@@ -104,7 +104,7 @@ public class VillagerTrade implements Listener {
             }, null, 1);
             return;
         }
-        ItemStack newItem = addTradeOrigin(tradedItem, player);
+        ItemStack newItem = addTradeOrigin(tradedItem, player, false);
         if (newItem != null) {
             // set the new item
             inventory.setItem(event.getSlot(), newItem);
@@ -118,7 +118,7 @@ public class VillagerTrade implements Listener {
      * @param owner   The player who traded.
      * @return The item with lore.
      */
-    private ItemStack addTradeOrigin(ItemStack oldItem, Player owner) {
+    private ItemStack addTradeOrigin(ItemStack oldItem, Player owner, Boolean isShiftClick) {
         ItemStack newItem = oldItem.clone();
         ItemMeta meta = newItem.getItemMeta();
         if (meta == null) {
@@ -143,16 +143,14 @@ public class VillagerTrade implements Listener {
             container.set(toolStats.hash, PersistentDataType.STRING, hash);
         }
 
-        if(!owner.hasPermission("toolstats.disable.trade.createdate"))
+        String formattedDate = toolStats.numberFormat.formatDate(finalDate);;
+        if(isShiftClick && owner.hasPermission("toolstats.disable.shifttrade.createdate"))
+            formattedDate = null;
+        else
             container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
 
         container.set(toolStats.itemOwner, new UUIDDataType(), owner.getUniqueId());
         container.set(toolStats.originType, PersistentDataType.INTEGER, 3);
-
-        String formattedDate = owner.hasPermission("toolstats.disable.trade.createdate") ?
-                null
-                : toolStats.numberFormat.formatDate(finalDate);
-
         List<Component> newLore = toolStats.itemLore.addNewOwner(meta, owner.getName(), formattedDate);
         meta.lore(newLore);
         newItem.setItemMeta(meta);
