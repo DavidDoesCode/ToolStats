@@ -8,66 +8,138 @@ tokens:
       title: "&7ToolStats: &8Player Kills Token"
       lore:
         - "&8Combine with a melee or ranged weapon in an anvil to track player kills."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     mob-kills:
       title: "&7ToolStats: &8Mob Kills Token"
       lore:
         - "&8Combine with a melee or ranged weapon in an anvil to track mob kills."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     blocks-mined:
       title: "&7ToolStats: &8Blocks Mined Token"
       lore:
         - "&8Combine with a pickaxe, axe, shovel, or shears in an anvil to track blocks mined."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     crops-mined:
       title: "&7ToolStats: &8Crops Mined Token"
       lore:
         - "&8Combine with a hoe in an anvil to track crops broken."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     fish-caught:
       title: "&7ToolStats: &8Fish Caught Token"
       lore:
         - "&8Combine with a fishing rod in an anvil to track fish caught."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     sheep-sheared:
       title: "&7ToolStats: &8Sheep Sheared Token"
       lore:
         - "&8Combine with shears in an anvil to track sheep sheared."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     damage-taken:
       title: "&7ToolStats: &8Damage Taken Token"
       lore:
         - "&8Combine with an armor piece in an anvil to track damage taken."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     damage-done:
       title: "&7ToolStats: &8Damage Done Token"
       lore:
         - "&8Combine with a melee or ranged weapon in an anvil to track damage done."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     arrows-shot:
       title: "&7ToolStats: &8Arrows Shot Token"
       lore:
         - "&8Combine with a bow or crossbow in an anvil to track arrows shot."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     flight-time:
       title: "&7ToolStats: &8Flight Time Token"
       lore:
         - "&8Combine with an elytra in an anvil to track flight time."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     reset:
       title: "&7ToolStats: &8Reset Token"
       lore:
         - "&8Combine in an anvil with to reset ALL stats for this item. Tokens on this item stay."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
     remove:
       title: "&7ToolStats: &8Remove Token"
       lore:
         - "&8Combine in an anvil with to REMOVE ALL stats and tokens for this item."
+        - "&8Uses &7{levels} &8level."
       levels: 1
+      material: PAPER
+      custom-model-data:
+        enabled: false
+        type: float
+        value: 1001
 
 enabled:
-  # Will show ownership of items when they are created/found.
-  created-by:
+  # Will show "Crafted by <player>"
+  crafted-by:
     pickaxe: true
     sword: true
     shovel: true
@@ -78,8 +150,8 @@ enabled:
     armor: true
     mace: true
     fishing-rod: true
-  # Will show time the item is created
-  created-date:
+  # Will show "Crafted on <date>"
+  crafted-on:
     pickaxe: true
     sword: true
     shovel: true
@@ -91,7 +163,18 @@ enabled:
     mace: true
     fishing-rod: true
   # Will show "Fished by <player>"
-  fished-tag:
+  fished-by:
+    pickaxe: true
+    sword: true
+    shovel: true
+    axe: true
+    hoe: true
+    shears: true
+    bow: true
+    armor: true
+    fishing-rod: true
+  # Will show "Fished on <date>"
+  fished-on:
     pickaxe: true
     sword: true
     shovel: true
@@ -102,7 +185,7 @@ enabled:
     armor: true
     fishing-rod: true
   # Will show "Found by <player>"
-  looted-tag:
+  looted-by:
     pickaxe: true
     sword: true
     shovel: true
@@ -112,8 +195,30 @@ enabled:
     bow: true
     armor: true
     fishing-rod: true
-  # Will show "Trade by <player>"
-  traded-tag:
+  # Will show "Found on <date>"
+  looted-on:
+    pickaxe: true
+    sword: true
+    shovel: true
+    axe: true
+    hoe: true
+    shears: true
+    bow: true
+    armor: true
+    fishing-rod: true
+  # Will show "Traded by <player>"
+  traded-by:
+    pickaxe: true
+    sword: true
+    shovel: true
+    axe: true
+    hoe: true
+    shears: true
+    bow: true
+    armor: true
+    fishing-rod: true
+  # Will show "Traded on <date>"
+  traded-on:
     pickaxe: true
     sword: true
     shovel: true
@@ -148,7 +253,19 @@ enabled:
     hoe: true
     shears: true
   # Will show "Spawned in by <player>"
-  spawned-in:
+  spawned-in-by:
+    pickaxe: true
+    sword: true
+    shovel: true
+    axe: true
+    hoe: true
+    shears: true
+    bow: true
+    armor: true
+    mace: true
+    fishing-rod: true
+  # Will show "Spawned in on <date>"
+  spawned-in-on:
     pickaxe: true
     sword: true
     shovel: true
@@ -163,15 +280,16 @@ enabled:
   sheep-sheared: true
   armor-damage: true
   dropped-by: true
+  dropped-on: true
   elytra-tag: true
   arrows-shot: true
   flight-time: true
   crops-harvested: true
 
 messages:
-  created:
-    created-by: "&7Crafted by: &8{player}"
-    created-on: "&7Crafted on: &8{date}"
+  crafted:
+    crafted-by: "&7Crafted by: &8{player}"
+    crafted-on: "&7Crafted on: &8{date}"
   fished:
     caught-by: "&7Caught by: &8{player}"
     caught-on: "&7Caught on: &8{date}"
@@ -193,7 +311,8 @@ messages:
   blocks-mined: "&7Blocks mined: &8{blocks}"
   crops-harvested: "&7Crops harvested: &8{crops}"
   sheep-sheared: "&7Sheep sheared: &8{sheep}"
-  dropped-by: "&7Dropped by: &8{name}" # name will be player/mob name
+  dropped-by: "&7Dropped by: &8{name}" # name will be mob name
+  dropped-on: "&7Dropped on: &8{date}"
   damage-taken: "&7Damage taken: &8{damage}"
   arrows-shot: "&7Arrows shot: &8{arrows}"
   flight-time: "&7Flight time: &8{years}y {months}m {days}d {hours}h {minutes}m {seconds}s"
@@ -220,4 +339,11 @@ number-formats:
 # This has no use currently, but can be used for future features for dupe detection.
 generate-hash-for-items: false
 
-config-version: 11
+# Make when items are created at midnight on the date.
+# This makes dates for items more "normalized" instead of being at different times.
+normalize-time-creation: false
+
+# Allows stats and origins to be tracked if the player is in creative mode.
+allow-creative: false
+
+config-version: 13

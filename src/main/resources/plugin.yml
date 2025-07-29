@@ -26,6 +26,12 @@ permissions:
   toolstats.givetokens:
     description: Allows the usage of /toolstats givetoken.
     default: op
+  toolstats.edit:
+    description: Allows the usage of /toolstats edit.
+    default: op
+  toolstats.remove:
+    description: Allows the usage of /toolstats remove.
+    default: op
   toolstats.disable.shiftcraft.createdate:
     description: Allows crafting without timestamp
     default: false

@@ -35,6 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -126,33 +127,65 @@ public class VillagerTrade implements Listener {
             return null;
         }
         long timeCreated = System.currentTimeMillis();
-        Date finalDate = new Date(timeCreated);
+        Date finalDate;
+        if (toolStats.config.getBoolean("normalize-time-creation")) {
+            finalDate = toolStats.numberFormat.normalizeTime(timeCreated);
+            timeCreated = finalDate.getTime();
+        } else {
+            finalDate = new Date(timeCreated);
+        }
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         if (container.has(toolStats.timeCreated, PersistentDataType.LONG) || container.has(toolStats.itemOwner, PersistentDataType.LONG)) {
             return null;
         }
 
-        if (!toolStats.configTools.checkConfig(newItem.getType(), "traded-tag")) {
-            return null;
+        // get the current lore the item
+        List<Component> lore;
+        if (meta.hasLore()) {
+            lore = meta.lore();
+        } else {
+            lore = new ArrayList<>();
         }
 
-        // only make the hash if it's enabled
+        if (toolStats.configTools.checkConfig(newItem.getType(), "traded-on")) {
+            // todo reimplement this
+//            String formattedDate = toolStats.numberFormat.formatDate(finalDate);
+//            if(isShiftClick && owner.hasPermission("toolstats.disable.shifttrade.createdate"))
+//                formattedDate = null;
+//            else
+//                container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
+
+            container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
+            container.set(toolStats.originType, PersistentDataType.INTEGER, 3);
+
+            String date = toolStats.numberFormat.formatDate(finalDate);
+            Component newLine = toolStats.configTools.formatLore("traded.traded-on", "{date}", date);
+            if (newLine == null) {
+                return null;
+            }
+            lore.add(newLine);
+            meta.lore(lore);
+        }
+
+        if (toolStats.configTools.checkConfig(newItem.getType(), "traded-by")) {
+            container.set(toolStats.itemOwner, new UUIDDataType(), owner.getUniqueId());
+            container.set(toolStats.originType, PersistentDataType.INTEGER, 3);
+
+            Component newLine = toolStats.configTools.formatLore("traded.traded-by", "{player}", owner.getName());
+            if (newLine == null) {
+                return null;
+            }
+            lore.add(newLine);
+            meta.lore(lore);
+        }
+
+        // if hash is enabled, add it
         if (toolStats.config.getBoolean("generate-hash-for-items")) {
             String hash = toolStats.hashMaker.makeHash(newItem.getType(), owner.getUniqueId(), timeCreated);
             container.set(toolStats.hash, PersistentDataType.STRING, hash);
         }
 
-        String formattedDate = toolStats.numberFormat.formatDate(finalDate);;
-        if(isShiftClick && owner.hasPermission("toolstats.disable.shifttrade.createdate"))
-            formattedDate = null;
-        else
-            container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
-
-        container.set(toolStats.itemOwner, new UUIDDataType(), owner.getUniqueId());
-        container.set(toolStats.originType, PersistentDataType.INTEGER, 3);
-        List<Component> newLore = toolStats.itemLore.addNewOwner(meta, owner.getName(), formattedDate);
-        meta.lore(newLore);
         newItem.setItemMeta(meta);
         return newItem;
     }

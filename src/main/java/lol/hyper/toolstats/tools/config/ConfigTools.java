@@ -49,6 +49,11 @@ public class ConfigTools {
      * @return If we want to add data or not.
      */
     public boolean checkConfig(Material material, String configName) {
+        if (toolStats.config.getConfigurationSection("enabled." + configName) == null) {
+            toolStats.logger.warning("Missing config section for enabled" + configName);
+            return false;
+        }
+
         String itemName = material.toString().toLowerCase();
         String itemType = null;
         // hardcode these
@@ -75,7 +80,6 @@ public class ConfigTools {
         } else {
             itemType = itemName.substring(itemName.indexOf('_') + 1);
         }
-
         return switch (itemType) {
             case "pickaxe" -> toolStats.config.getBoolean("enabled." + configName + ".pickaxe");
             case "sword" -> toolStats.config.getBoolean("enabled." + configName + ".sword");
@@ -240,6 +244,13 @@ public class ConfigTools {
 
         List<Component> finalLore = new ArrayList<>();
         for (String line : raw) {
+            if (line.contains("{levels}")) {
+                Integer levels = toolStats.config.getInt("tokens.data." + tokenType + ".levels");
+                // will return 0 if it doesn't exist
+                if (levels != 0) {
+                    line = line.replace("{levels}", String.valueOf(levels));
+                }
+            }
             Component component;
             // if we match the old color codes, then format them as so
             Matcher hexMatcher = CONFIG_HEX_PATTERN.matcher(line);

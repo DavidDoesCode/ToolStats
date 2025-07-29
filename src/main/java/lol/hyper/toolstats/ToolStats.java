@@ -25,7 +25,6 @@ import lol.hyper.toolstats.events.*;
 import lol.hyper.toolstats.tools.*;
 import lol.hyper.toolstats.tools.config.ConfigTools;
 import lol.hyper.toolstats.tools.config.ConfigUpdater;
-import lol.hyper.toolstats.tools.config.TokenItems;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -94,6 +93,10 @@ public final class ToolStats extends JavaPlugin {
      */
     public final NamespacedKey arrowsShot = new NamespacedKey(this, "arrows-shot");
     /**
+     * Key for arrows shot.
+     */
+    public final NamespacedKey droppedBy = new NamespacedKey(this, "dropped-by");
+    /**
      * Key for tracking flight time.
      */
     public final NamespacedKey flightTime = new NamespacedKey(this, "flightTime");
@@ -117,7 +120,7 @@ public final class ToolStats extends JavaPlugin {
      */
     public final NamespacedKey originType = new NamespacedKey(this, "origin");
 
-    public final int CONFIG_VERSION = 11;
+    public final int CONFIG_VERSION = 13;
     public final Logger logger = this.getLogger();
     public final File configFile = new File(this.getDataFolder(), "config.yml");
     public boolean tokens = false;
@@ -146,8 +149,7 @@ public final class ToolStats extends JavaPlugin {
     public ItemChecker itemChecker;
     public ShootBow shootBow;
     public ConfigTools configTools;
-    public TokenItems tokenItems;
-    public TokenCrafting tokenCrafting;
+    public TokenData tokenData;
     public AnvilEvent anvilEvent;
     public PrepareCraft prepareCraft;
 
@@ -160,10 +162,9 @@ public final class ToolStats extends JavaPlugin {
 
         loadConfig();
         configTools = new ConfigTools(this);
-        tokenItems = new TokenItems(this);
-        tokenCrafting = new TokenCrafting(this);
-        tokenCrafting.setup();
-        for (ShapedRecipe recipe : tokenCrafting.getRecipes()) {
+        tokenData = new TokenData(this);
+        tokenData.setup();
+        for (ShapedRecipe recipe : tokenData.getRecipes()) {
             if (tokens && config.getBoolean("tokens.craft-tokens")) {
                 Bukkit.addRecipe(recipe);
             }
