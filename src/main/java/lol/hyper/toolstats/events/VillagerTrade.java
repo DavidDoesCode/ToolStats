@@ -148,14 +148,8 @@ public class VillagerTrade implements Listener {
             lore = new ArrayList<>();
         }
 
-        if (toolStats.configTools.checkConfig(newItem.getType(), "traded-on")) {
-            // todo reimplement this
-//            String formattedDate = toolStats.numberFormat.formatDate(finalDate);
-//            if(isShiftClick && owner.hasPermission("toolstats.disable.shifttrade.createdate"))
-//                formattedDate = null;
-//            else
-//                container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
-
+        if (toolStats.configTools.checkConfig(newItem.getType(), "traded-on") &&
+            !(isShiftClick && owner.hasPermission("toolstats.disable.shifttrade.createdate"))) {
             container.set(toolStats.timeCreated, PersistentDataType.LONG, timeCreated);
             container.set(toolStats.originType, PersistentDataType.INTEGER, 3);
 
