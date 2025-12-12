@@ -18,7 +18,6 @@
 package lol.hyper.toolstats.events;
 
 import lol.hyper.toolstats.ToolStats;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -53,15 +52,23 @@ public class PlayerMove implements Listener {
             // player is not flying
             if (playerStartFlight.containsKey(player)) {
                 PlayerInventory inventory = player.getInventory();
-                ItemStack chest = inventory.getChestplate();
-                // make sure the player is wearing an elytra
-                if (chest != null && chest.getType() == Material.ELYTRA) {
-                    long duration = (System.currentTimeMillis() - playerStartFlight.get(player));
-                    ItemMeta newItem = toolStats.itemLore.updateFlightTime(chest, duration);
-                    if (newItem != null) {
-                        inventory.getChestplate().setItemMeta(newItem);
+                // copy their current armor
+                ItemStack[] armor = inventory.getArmorContents().clone();
+                for (ItemStack armorPiece : armor) {
+                    // skip missing slots
+                    if (armorPiece == null) {
+                        continue;
+                    }
+                    // if the armor piece can glide, track the flight time
+                    if (toolStats.itemChecker.canGlide(armorPiece)) {
+                        long duration = (System.currentTimeMillis() - playerStartFlight.get(player));
+                        ItemMeta newMeta = toolStats.itemLore.updateFlightTime(armorPiece, duration);
+                        if (newMeta != null) {
+                            armorPiece.setItemMeta(newMeta);
+                        }
                     }
                 }
+                inventory.setArmorContents(armor);
                 playerStartFlight.remove(player);
             }
         }

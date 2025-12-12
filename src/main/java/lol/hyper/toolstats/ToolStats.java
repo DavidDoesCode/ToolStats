@@ -17,15 +17,16 @@
 
 package lol.hyper.toolstats;
 
-import lol.hyper.githubreleaseapi.GitHubRelease;
-import lol.hyper.githubreleaseapi.GitHubReleaseAPI;
-import lol.hyper.githubreleaseapi.ReleaseNotFoundException;
+import lol.hyper.hyperlib.HyperLib;
+import lol.hyper.hyperlib.bstats.HyperStats;
+import lol.hyper.hyperlib.releases.HyperUpdater;
+import lol.hyper.hyperlib.utils.TextUtils;
 import lol.hyper.toolstats.commands.CommandToolStats;
 import lol.hyper.toolstats.events.*;
 import lol.hyper.toolstats.tools.*;
 import lol.hyper.toolstats.tools.config.ConfigTools;
 import lol.hyper.toolstats.tools.config.ConfigUpdater;
-import org.bstats.bukkit.Metrics;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,10 +34,8 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public final class ToolStats extends JavaPlugin {
 
@@ -121,7 +120,7 @@ public final class ToolStats extends JavaPlugin {
     public final NamespacedKey originType = new NamespacedKey(this, "origin");
 
     public final int CONFIG_VERSION = 13;
-    public final Logger logger = this.getLogger();
+    public final ComponentLogger logger = this.getComponentLogger();
     public final File configFile = new File(this.getDataFolder(), "config.yml");
     public boolean tokens = false;
     public final Set<NamespacedKey> tokenKeys = new HashSet<>();
@@ -152,9 +151,20 @@ public final class ToolStats extends JavaPlugin {
     public TokenData tokenData;
     public AnvilEvent anvilEvent;
     public PrepareCraft prepareCraft;
+    public BlockDispenseEvent blockDispenseEvent;
+    public HyperLib hyperLib;
+    public TextUtils textUtils;
 
     @Override
     public void onEnable() {
+        hyperLib = new HyperLib(this);
+        hyperLib.setup();
+
+        HyperStats stats = new HyperStats(hyperLib, 14110);
+        stats.setup();
+
+        textUtils = new TextUtils(hyperLib);
+
         if (!configFile.exists()) {
             this.saveResource("config.yml", true);
             logger.info("Copying default config!");
@@ -192,6 +202,7 @@ public final class ToolStats extends JavaPlugin {
         shootBow = new ShootBow(this);
         anvilEvent = new AnvilEvent(this);
         prepareCraft = new PrepareCraft(this);
+        blockDispenseEvent = new BlockDispenseEvent(this);
 
         // save which stat can be used by a reset token
         tokenKeys.add(blocksMined);
@@ -222,17 +233,21 @@ public final class ToolStats extends JavaPlugin {
         Bukkit.getServer().getPluginManager().registerEvents(playerMove, this);
         Bukkit.getServer().getPluginManager().registerEvents(anvilEvent, this);
         Bukkit.getServer().getPluginManager().registerEvents(prepareCraft, this);
+        Bukkit.getServer().getPluginManager().registerEvents(blockDispenseEvent, this);
 
         this.getCommand("toolstats").setExecutor(commandToolStats);
 
-        new Metrics(this, 14110);
-        Bukkit.getAsyncScheduler().runNow(this, scheduledTask -> checkForUpdates());
+        HyperUpdater updater = new HyperUpdater(hyperLib);
+        updater.setGitHub("hyperdefined", "ToolStats");
+        updater.setModrinth("oBZj9E15");
+        updater.setHangar("ToolStats", "paper");
+        updater.check();
     }
 
     public void loadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
         if (config.getInt("config-version") != CONFIG_VERSION) {
-            logger.warning("Your config file is outdated! We will try to update it, but you should regenerate it!");
+            logger.warn("Your config file is outdated! We will try to update it, but you should regenerate it!");
             ConfigUpdater configUpdater = new ConfigUpdater(this);
             configUpdater.updateConfig();
         }
@@ -246,30 +261,5 @@ public final class ToolStats extends JavaPlugin {
         tokens = config.getBoolean("tokens.enabled");
 
         numberFormat = new NumberFormat(this);
-    }
-
-    public void checkForUpdates() {
-        GitHubReleaseAPI api;
-        try {
-            api = new GitHubReleaseAPI("ToolStats", "hyperdefined");
-        } catch (IOException e) {
-            logger.warning("Unable to check updates!");
-            e.printStackTrace();
-            return;
-        }
-        GitHubRelease current;
-        try {
-            current = api.getReleaseByTag(this.getPluginMeta().getVersion());
-        } catch (ReleaseNotFoundException e) {
-            logger.warning("You are running a version that does not exist on GitHub. If you are in a dev environment, you can ignore this. Otherwise, this is a bug!");
-            return;
-        }
-        GitHubRelease latest = api.getLatestVersion();
-        int buildsBehind = api.getBuildsBehind(current);
-        if (buildsBehind == 0) {
-            logger.info("You are running the latest version.");
-        } else {
-            logger.warning("A new version is available (" + latest.getTagVersion() + ")! You are running version " + current.getTagVersion() + ". You are " + buildsBehind + " version(s) behind.");
-        }
     }
 }

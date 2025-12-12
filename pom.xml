@@ -23,7 +23,7 @@
 
     <groupId>lol.hyper</groupId>
     <artifactId>toolstats</artifactId>
-    <version>1.9.8</version>
+    <version>1.9.10</version>
     <packaging>jar</packaging>
 
     <name>ToolStats</name>
@@ -51,7 +51,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -60,16 +60,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
                 <configuration>
                     <relocations>
                         <relocation>
-                            <pattern>org.bstats</pattern>
-                            <shadedPattern>lol.hyper.toolstats.bstats</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>lol.hyper.githubreleaseapi</pattern>
-                            <shadedPattern>lol.hyper.toolstats.updater</shadedPattern>
+                            <pattern>lol.hyper.hyperlib</pattern>
+                            <shadedPattern>lol.hyper.toolstats.hyperlib</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -99,25 +95,23 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.7-R0.1-SNAPSHOT</version>
+            <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.1.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>lol.hyper</groupId>
-            <artifactId>github-release-api</artifactId>
-            <version>1.0.5</version>
+            <groupId>com.github.hyperdefined</groupId>
+            <artifactId>hyperlib</artifactId>
+            <version>1.0.9</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

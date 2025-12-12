@@ -17,17 +17,17 @@
 
 package lol.hyper.toolstats.tools;
 
+import lol.hyper.hyperlib.datatypes.UUIDDataType;
 import lol.hyper.toolstats.ToolStats;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemLore {
 
@@ -71,25 +71,6 @@ public class ItemLore {
     }
 
     /**
-     * Add lore to a given item.
-     *
-     * @param itemMeta The item's meta.
-     * @param newLine  The new line to add to the lore.
-     * @return The new item's lore.
-     */
-    public List<Component> addItemLore(ItemMeta itemMeta, Component newLine) {
-        List<Component> itemLore;
-        if (itemMeta.hasLore()) {
-            itemLore = itemMeta.lore();
-            itemLore.add(newLine);
-        } else {
-            itemLore = new ArrayList<>();
-            itemLore.add(newLine);
-        }
-        return itemLore;
-    }
-
-    /**
      * Remove a given lore from an item.
      *
      * @param inputLore The item's lore.
@@ -97,6 +78,9 @@ public class ItemLore {
      * @return The lore with the line removed.
      */
     public List<Component> removeLore(List<Component> inputLore, Component toRemove) {
+        if (inputLore == null) {
+            return Collections.emptyList();
+        }
         List<Component> newLore = new ArrayList<>(inputLore);
         newLore.removeIf(line -> PlainTextComponentSerializer.plainText().serialize(line).equals(PlainTextComponentSerializer.plainText().serialize(toRemove)));
         return newLore;
@@ -111,7 +95,7 @@ public class ItemLore {
         ItemStack clone = playerTool.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
         // read the current stats from the item
@@ -185,7 +169,7 @@ public class ItemLore {
 
         if (cropsMined == null) {
             cropsMined = 0;
-            toolStats.logger.warning(clone + " does not have valid crops-mined set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid crops-mined set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.cropsHarvested, PersistentDataType.INTEGER, cropsMined + add);
@@ -196,7 +180,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -210,7 +194,7 @@ public class ItemLore {
         ItemStack clone = playerTool.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -284,7 +268,7 @@ public class ItemLore {
 
         if (blocksMined == null) {
             blocksMined = 0;
-            toolStats.logger.warning(clone + " does not have valid generic-mined set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid generic-mined set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.blocksMined, PersistentDataType.INTEGER, blocksMined + add);
@@ -295,7 +279,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -309,7 +293,7 @@ public class ItemLore {
         ItemStack clone = playerWeapon.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -382,7 +366,7 @@ public class ItemLore {
 
         if (playerKills == null) {
             playerKills = 0;
-            toolStats.logger.warning(clone + " does not have valid player-kills set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid player-kills set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.playerKills, PersistentDataType.INTEGER, playerKills + add);
@@ -393,7 +377,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -407,7 +391,7 @@ public class ItemLore {
         ItemStack clone = playerWeapon.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -480,7 +464,7 @@ public class ItemLore {
 
         if (mobKills == null) {
             mobKills = 0;
-            toolStats.logger.warning(clone + " does not have valid mob-kills set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid mob-kills set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.mobKills, PersistentDataType.INTEGER, mobKills + add);
@@ -491,7 +475,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -513,7 +497,7 @@ public class ItemLore {
         ItemStack clone = armorPiece.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -586,7 +570,7 @@ public class ItemLore {
 
         if (damageTaken == null) {
             damageTaken = 0.0;
-            toolStats.logger.warning(clone + " does not have valid damage-taken set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid damage-taken set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.armorDamage, PersistentDataType.DOUBLE, damageTaken + damage);
@@ -597,7 +581,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -619,7 +603,7 @@ public class ItemLore {
         ItemStack clone = weapon.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -692,7 +676,7 @@ public class ItemLore {
 
         if (damageDone == null) {
             damageDone = 0.0;
-            toolStats.logger.warning(clone + " does not have valid damage-done set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid damage-done set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.damageDone, PersistentDataType.DOUBLE, damageDone + damage);
@@ -703,7 +687,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -717,7 +701,7 @@ public class ItemLore {
         ItemStack clone = elytra.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -800,7 +784,7 @@ public class ItemLore {
 
         if (flightTime == null) {
             flightTime = 0L;
-            toolStats.logger.warning(flightTime + " does not have valid flight-time set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid flight-time set! Resting to zero. This should NEVER happen.", flightTime);
         }
 
         container.set(toolStats.flightTime, PersistentDataType.LONG, flightTime + duration);
@@ -819,7 +803,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -833,7 +817,7 @@ public class ItemLore {
         ItemStack clone = shears.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -906,7 +890,7 @@ public class ItemLore {
 
         if (sheepSheared == null) {
             sheepSheared = 0;
-            toolStats.logger.warning(clone + " does not have valid sheared set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid sheared set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.sheepSheared, PersistentDataType.INTEGER, sheepSheared + add);
@@ -917,7 +901,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -931,7 +915,7 @@ public class ItemLore {
         ItemStack clone = bow.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -1006,7 +990,7 @@ public class ItemLore {
 
         if (arrowsShot == null) {
             arrowsShot = 0;
-            toolStats.logger.warning(arrowsShot + " does not have valid arrows-shot set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid arrows-shot set! Resting to zero. This should NEVER happen.", arrowsShot);
         }
 
         container.set(toolStats.arrowsShot, PersistentDataType.INTEGER, arrowsShot + add);
@@ -1017,7 +1001,7 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
     }
@@ -1031,7 +1015,7 @@ public class ItemLore {
         ItemStack clone = fishingRod.clone();
         ItemMeta meta = clone.getItemMeta();
         if (meta == null) {
-            toolStats.logger.warning(clone + " does NOT have any meta! Unable to update stats.");
+            toolStats.logger.warn("{} does NOT have any meta! Unable to update stats.", clone);
             return null;
         }
 
@@ -1104,7 +1088,7 @@ public class ItemLore {
 
         if (fishCaught == null) {
             fishCaught = 0;
-            toolStats.logger.warning(clone + " does not have valid fish-caught set! Resting to zero. This should NEVER happen.");
+            toolStats.logger.warn("{} does not have valid fish-caught set! Resting to zero. This should NEVER happen.", clone);
         }
 
         container.set(toolStats.fishCaught, PersistentDataType.INTEGER, fishCaught + add);
@@ -1115,8 +1099,269 @@ public class ItemLore {
         if (oldLine == null || newLine == null) {
             return null;
         }
-        List<Component> newLore = toolStats.itemLore.updateItemLore(meta, oldLine, newLine);
+        List<Component> newLore = updateItemLore(meta, oldLine, newLine);
         meta.lore(newLore);
         return meta;
+    }
+
+    /**
+     * Format the item owner lore.
+     *
+     * @param playerName The player's name who owns the items.
+     * @param origin     The origin type.
+     * @param item       The item.
+     * @return A component with the lore.
+     */
+    public Component formatOwner(String playerName, int origin, ItemStack item) {
+        switch (origin) {
+            case 0: {
+                if (toolStats.configTools.checkConfig(item.getType(), "crafted-by")) {
+                    return toolStats.configTools.formatLore("crafted.crafted-by", "{player}", playerName);
+                }
+                break;
+            }
+            case 2: {
+                if (toolStats.configTools.checkConfig(item.getType(), "looted-by")) {
+                    return toolStats.configTools.formatLore("looted.looted-by", "{player}", playerName);
+                }
+                break;
+            }
+            case 3: {
+                if (toolStats.configTools.checkConfig(item.getType(), "traded-by")) {
+                    return toolStats.configTools.formatLore("traded.traded-by", "{player}", playerName);
+                }
+                break;
+            }
+            case 4: {
+                if (toolStats.config.getBoolean("enabled.elytra-tag")) {
+                    return toolStats.configTools.formatLore("looted.found-by", "{player}", playerName);
+                }
+                break;
+            }
+            case 5: {
+                if (toolStats.configTools.checkConfig(item.getType(), "fished-by")) {
+                    return toolStats.configTools.formatLore("fished.caught-by", "{player}", playerName);
+                }
+                break;
+            }
+            case 6: {
+                if (toolStats.configTools.checkConfig(item.getType(), "spawned-in-by")) {
+                    return toolStats.configTools.formatLore("spawned-in.spawned-by", "{player}", playerName);
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Format the item creation time.
+     *
+     * @param creationDate When the item was created.
+     * @param origin       The origin type.
+     * @param item         The item.
+     * @return A component with the lore.
+     */
+    public Component formatCreationTime(long creationDate, int origin, ItemStack item) {
+        String date = toolStats.numberFormat.formatDate(new Date(creationDate));
+        switch (origin) {
+            case 0: {
+                if (toolStats.configTools.checkConfig(item.getType(), "crafted-on")) {
+                    return toolStats.configTools.formatLore("crafted.crafted-on", "{date}", date);
+                }
+                break;
+            }
+            case 1: {
+                if (toolStats.config.getBoolean("enabled.dropped-on")) {
+                    return toolStats.configTools.formatLore("dropped-on", "{date}", date);
+                }
+                break;
+            }
+            case 2: {
+                if (toolStats.configTools.checkConfig(item.getType(), "looted-on")) {
+                    return toolStats.configTools.formatLore("looted.looted-on", "{date}", date);
+                }
+                break;
+            }
+            case 3: {
+                if (toolStats.configTools.checkConfig(item.getType(), "traded-on")) {
+                    return toolStats.configTools.formatLore("traded.traded-on", "{date}", date);
+                }
+                break;
+            }
+            case 4: {
+                if (toolStats.config.getBoolean("enabled.elytra-tag")) {
+                    return toolStats.configTools.formatLore("looted.found-on", "{date}", date);
+                }
+                break;
+            }
+            case 5: {
+                if (toolStats.configTools.checkConfig(item.getType(), "fished-on")) {
+                    return toolStats.configTools.formatLore("fished.caught-on", "{date}", date);
+                }
+                break;
+            }
+            case 6: {
+                if (toolStats.configTools.checkConfig(item.getType(), "spawned-in-on")) {
+                    return toolStats.configTools.formatLore("spawned-in.spawned-on", "{date}", date);
+                }
+                break;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Remove all stats, ownership, and creation time from an item.
+     *
+     * @param inputItem  The input item to remove stats from.
+     * @param removeMeta Remove ownership and creation time?
+     */
+    public ItemStack removeAll(ItemStack inputItem, boolean removeMeta) {
+        ItemStack finalItem = inputItem.clone();
+        ItemMeta meta = finalItem.getItemMeta();
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+
+        // remove the applied tokens
+        if (container.has(toolStats.tokenApplied)) {
+            container.remove(toolStats.tokenApplied);
+        }
+
+        if (container.has(toolStats.playerKills)) {
+            Integer playerKills = container.get(toolStats.playerKills, PersistentDataType.INTEGER);
+            if (playerKills != null) {
+                container.remove(toolStats.playerKills);
+
+                String playerKillsFormatted = toolStats.numberFormat.formatInt(playerKills);
+                Component lineToRemove = toolStats.configTools.formatLore("kills.player", "{kills}", playerKillsFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.mobKills)) {
+            Integer mobKills = container.get(toolStats.mobKills, PersistentDataType.INTEGER);
+            if (mobKills != null) {
+                container.remove(toolStats.mobKills);
+                String mobKillsFormatted = toolStats.numberFormat.formatInt(mobKills);
+                Component lineToRemove = toolStats.configTools.formatLore("kills.mob", "{kills}", mobKillsFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.blocksMined)) {
+            Integer blocksMined = container.get(toolStats.blocksMined, PersistentDataType.INTEGER);
+            if (blocksMined != null) {
+                container.remove(toolStats.blocksMined);
+                String blocksMinedFormatted = toolStats.numberFormat.formatInt(blocksMined);
+                Component lineToRemove = toolStats.configTools.formatLore("blocks-mined", "{blocks}", blocksMinedFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.cropsHarvested)) {
+            Integer cropsHarvested = container.get(toolStats.playerKills, PersistentDataType.INTEGER);
+            if (cropsHarvested != null) {
+                container.remove(toolStats.cropsHarvested);
+                String cropsHarvestedFormatted = toolStats.numberFormat.formatInt(cropsHarvested);
+                Component lineToRemove = toolStats.configTools.formatLore("crops-harvested", "{crops}", cropsHarvestedFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.fishCaught)) {
+            Integer fishCaught = container.get(toolStats.fishCaught, PersistentDataType.INTEGER);
+            if (fishCaught != null) {
+                container.remove(toolStats.fishCaught);
+                String fishCaughtFormatted = toolStats.numberFormat.formatInt(fishCaught);
+                Component lineToRemove = toolStats.configTools.formatLore("fished.fish-caught", "{fish}", fishCaughtFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.sheepSheared)) {
+            Integer sheepSheared = container.get(toolStats.sheepSheared, PersistentDataType.INTEGER);
+            if (sheepSheared != null) {
+                container.remove(toolStats.sheepSheared);
+                String sheepShearedFormatted = toolStats.numberFormat.formatInt(sheepSheared);
+                Component lineToRemove = toolStats.configTools.formatLore("sheep.sheared", "{sheep}", sheepShearedFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.armorDamage)) {
+            Double armorDamage = container.get(toolStats.armorDamage, PersistentDataType.DOUBLE);
+            if (armorDamage != null) {
+                container.remove(toolStats.armorDamage);
+                String armorDamageFormatted = toolStats.numberFormat.formatDouble(armorDamage);
+                Component lineToRemove = toolStats.configTools.formatLore("damage-taken", "{damage}", armorDamageFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.damageDone)) {
+            Double damageDone = container.get(toolStats.damageDone, PersistentDataType.DOUBLE);
+            if (damageDone != null) {
+                container.remove(toolStats.damageDone);
+                String damageDoneFormatted = toolStats.numberFormat.formatDouble(damageDone);
+                Component lineToRemove = toolStats.configTools.formatLore("damage-done", "{damage}", damageDoneFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.arrowsShot)) {
+            Integer arrowsShot = container.get(toolStats.arrowsShot, PersistentDataType.INTEGER);
+            if (arrowsShot != null) {
+                container.remove(toolStats.arrowsShot);
+
+                String arrowsShotFormatted = toolStats.numberFormat.formatInt(arrowsShot);
+                Component lineToRemove = toolStats.configTools.formatLore("arrows-shot", "{arrows}", arrowsShotFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (container.has(toolStats.flightTime)) {
+            Long flightTime = container.get(toolStats.flightTime, PersistentDataType.LONG);
+            if (flightTime != null) {
+                container.remove(toolStats.flightTime);
+                Map<String, String> flightTimeFormatted = toolStats.numberFormat.formatTime(flightTime);
+                Component lineToRemove = toolStats.configTools.formatLoreMultiplePlaceholders("flight-time", flightTimeFormatted);
+                meta.lore(removeLore(meta.lore(), lineToRemove));
+                finalItem.setItemMeta(meta);
+            }
+        }
+        if (removeMeta) {
+            Integer origin = null;
+            if (container.has(toolStats.originType)) {
+                origin = container.get(toolStats.originType, PersistentDataType.INTEGER);
+            }
+
+            if (container.has(toolStats.timeCreated)) {
+                Long timeCreated = container.get(toolStats.timeCreated, PersistentDataType.LONG);
+                if (timeCreated != null && origin != null) {
+                    container.remove(toolStats.timeCreated);
+                    Component timeCreatedLore = formatCreationTime(timeCreated, origin, finalItem);
+                    meta.lore(removeLore(meta.lore(), timeCreatedLore));
+                }
+            }
+            if (container.has(toolStats.itemOwner)) {
+                UUID owner = container.get(toolStats.itemOwner, new UUIDDataType());
+                if (owner != null && origin != null) {
+                    container.remove(toolStats.itemOwner);
+                    String ownerName = Bukkit.getOfflinePlayer(owner).getName();
+                    if (ownerName != null) {
+                        Component ownerLore = formatOwner(ownerName, origin, finalItem);
+                        meta.lore(removeLore(meta.lore(), ownerLore));
+                    }
+                }
+            }
+
+            if (origin != null) {
+                container.remove(toolStats.originType);
+            }
+
+            finalItem.setItemMeta(meta);
+        }
+
+        return finalItem;
     }
 }

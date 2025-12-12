@@ -17,12 +17,11 @@
 
 package lol.hyper.toolstats.commands;
 
+import lol.hyper.hyperlib.datatypes.UUIDDataType;
 import lol.hyper.toolstats.ToolStats;
-import lol.hyper.toolstats.tools.UUIDDataType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -155,6 +154,37 @@ public class CommandToolStats implements TabExecutor {
                 sender.sendMessage(Component.text("Type /toolstats reset confirm to confirm this.", NamedTextColor.GREEN));
                 return true;
             }
+            case "purge": {
+                if (!sender.hasPermission("toolstats.purge")) {
+                    sender.sendMessage(Component.text("You do not have permission for this command.", NamedTextColor.RED));
+                    return true;
+                }
+                if (sender instanceof ConsoleCommandSender) {
+                    sender.sendMessage(Component.text("You must be a player for this command.", NamedTextColor.RED));
+                    return true;
+                }
+                if (args.length == 2 && args[1].equalsIgnoreCase("confirm")) {
+                    if (!sender.hasPermission("toolstats.purge.confirm")) {
+                        sender.sendMessage(Component.text("You do not have permission for this command.", NamedTextColor.RED));
+                        return true;
+                    }
+                    Player player = (Player) sender;
+                    ItemStack heldItem = player.getInventory().getItemInMainHand();
+                    if (!toolStats.itemChecker.isValidItem(heldItem.getType())) {
+                        sender.sendMessage(Component.text("You must hold a valid item.", NamedTextColor.RED));
+                        return true;
+                    }
+                    ItemStack purgedItem = toolStats.itemLore.removeAll(heldItem, true);
+                    player.getInventory().setItemInMainHand(purgedItem);
+                    sender.sendMessage(Component.text("The item was purged!", NamedTextColor.GREEN));
+                    return true;
+                }
+                sender.sendMessage(Component.text("This will purge ALL ToolStats data from this item.", NamedTextColor.GREEN));
+                sender.sendMessage(Component.text("This includes all stats, ownership, and creation time.", NamedTextColor.GREEN));
+                sender.sendMessage(Component.text("THIS CANNOT BE UNDONE!", NamedTextColor.GREEN));
+                sender.sendMessage(Component.text("Type /toolstats purge confirm to confirm this.", NamedTextColor.GREEN));
+                return true;
+            }
             case "givetokens": {
                 if (!sender.hasPermission("toolstats.givetokens")) {
                     sender.sendMessage(Component.text("You do not have permission for this command.", NamedTextColor.RED));
@@ -233,38 +263,6 @@ public class CommandToolStats implements TabExecutor {
             origin = -1;
         }
 
-        // hard code elytras
-        if (finalItem.getType() == Material.ELYTRA) {
-            Long flightTime = null;
-            Long timeCreated = null;
-            if (container.has(toolStats.timeCreated, PersistentDataType.LONG)) {
-                timeCreated = container.get(toolStats.timeCreated, PersistentDataType.LONG);
-            }
-            if (container.has(toolStats.flightTime, PersistentDataType.LONG)) {
-                flightTime = container.get(toolStats.flightTime, PersistentDataType.LONG);
-            }
-
-            if (flightTime != null) {
-                if (toolStats.config.getBoolean("enabled.flight-time")) {
-                    Map<String, String> flightTimeFormatted = toolStats.numberFormat.formatTime(flightTime);
-                    Component line = toolStats.configTools.formatLoreMultiplePlaceholders("flight-time", flightTimeFormatted);
-                    lore.add(line);
-                }
-            }
-
-            if (timeCreated != null) {
-                Component timeCreatedLine = toolStats.configTools.formatLore("looted.found-by", "{player}", player.getName());
-                Component playerOwnerLine = toolStats.configTools.formatLore("looted.found-on", "{date}", toolStats.numberFormat.formatDate(new Date(timeCreated)));
-                lore.add(timeCreatedLine);
-                lore.add(playerOwnerLine);
-            }
-
-            finalMeta.lore(lore);
-            finalItem.setItemMeta(finalMeta);
-            int slot = player.getInventory().getHeldItemSlot();
-            player.getInventory().setItem(slot, finalItem);
-        }
-
         if (container.has(toolStats.droppedBy, PersistentDataType.STRING)) {
             if (toolStats.config.getBoolean("enabled.dropped-by")) {
                 if (container.has(toolStats.droppedBy)) {
@@ -293,82 +291,30 @@ public class CommandToolStats implements TabExecutor {
                 container.set(toolStats.itemOwner, new UUIDDataType(), player.getUniqueId());
             }
 
-            // show how the item was created based on the previous lore
-            switch (origin) {
-                case 0: {
-                    if (toolStats.configTools.checkConfig(original.getType(), "crafted-by")) {
-                        lore.add(toolStats.configTools.formatLore("crafted.crafted-by", "{player}", ownerName));
-                    }
-                    break;
-                }
-                case 2: {
-                    if (toolStats.configTools.checkConfig(original.getType(), "looted-by")) {
-                        lore.add(toolStats.configTools.formatLore("looted.looted-by", "{player}", ownerName));
-                    }
-                    break;
-                }
-                case 3: {
-                    if (toolStats.configTools.checkConfig(original.getType(), "traded-by")) {
-                        lore.add(toolStats.configTools.formatLore("traded.traded-by", "{player}", ownerName));
-                    }
-                    break;
-                }
-                case 5: {
-                    if (toolStats.configTools.checkConfig(original.getType(), "fished-by")) {
-                        lore.add(toolStats.configTools.formatLore("fished.caught-by", "{player}", ownerName));
-                    }
-                    break;
-                }
-                case 6: {
-                    if (toolStats.configTools.checkConfig(original.getType(), "spawned-in-by")) {
-                        lore.add(toolStats.configTools.formatLore("spawned-in.spawned-by", "{player}", ownerName));
-                    }
-                    break;
-                }
+            // add the ownership lore
+            Component ownerLore = toolStats.itemLore.formatOwner(ownerName, origin, original);
+            if (ownerLore != null) {
+                lore.add(ownerLore);
             }
+
         }
         if (container.has(toolStats.timeCreated, PersistentDataType.LONG)) {
             Long time = container.get(toolStats.timeCreated, PersistentDataType.LONG);
             if (time != null) {
-                String date = toolStats.numberFormat.formatDate(new Date(time));
-                // show how when the item was created based on the previous lore
-                switch (origin) {
-                    case 0: {
-                        if (toolStats.configTools.checkConfig(original.getType(), "crafted-on")) {
-                            lore.add(toolStats.configTools.formatLore("crafted.crafted-on", "{date}", date));
-                        }
-                        break;
-                    }
-                    case 1: {
-                        if (toolStats.config.getBoolean("enabled.dropped-on")) {
-                            lore.add(toolStats.configTools.formatLore("dropped-on", "{date}", date));
-                        }
-                        break;
-                    }
-                    case 2: {
-                        if (toolStats.configTools.checkConfig(original.getType(), "looted-on")) {
-                            lore.add(toolStats.configTools.formatLore("looted.looted-on", "{date}", date));
-                        }
-                        break;
-                    }
-                    case 3: {
-                        if (toolStats.configTools.checkConfig(original.getType(), "traded-on")) {
-                            lore.add(toolStats.configTools.formatLore("traded.traded-on", "{date}", date));
-                        }
-                        break;
-                    }
-                    case 5: {
-                        if (toolStats.configTools.checkConfig(original.getType(), "fished-on")) {
-                            lore.add(toolStats.configTools.formatLore("fished.caught-on", "{date}", date));
-                        }
-                        break;
-                    }
-                    case 6: {
-                        if (toolStats.configTools.checkConfig(original.getType(), "spawned-in-on")) {
-                            lore.add(toolStats.configTools.formatLore("spawned-in.spawned-on", "{date}", date));
-                        }
-                        break;
-                    }
+                // add the creation time lore
+                Component creationTimeLore = toolStats.itemLore.formatCreationTime(time, origin, original);
+                if (creationTimeLore != null) {
+                    lore.add(creationTimeLore);
+                }
+            }
+        }
+        if (toolStats.config.getBoolean("enabled.flight-time")) {
+            if (container.has(toolStats.flightTime, PersistentDataType.LONG)) {
+                Long flightTime = container.get(toolStats.flightTime, PersistentDataType.LONG);
+                if (flightTime != null) {
+                    Map<String, String> flightTimeFormatted = toolStats.numberFormat.formatTime(flightTime);
+                    Component line = toolStats.configTools.formatLoreMultiplePlaceholders("flight-time", flightTimeFormatted);
+                    lore.add(line);
                 }
             }
         }
@@ -1076,10 +1022,16 @@ public class CommandToolStats implements TabExecutor {
             if (sender.hasPermission("toolstats.remove")) {
                 suggestions.add("remove");
             }
+            if (sender.hasPermission("toolstats.purge")) {
+                suggestions.add("purge");
+            }
             return suggestions.isEmpty() ? null : suggestions;
         }
 
         if (args.length == 2 && args[0].equalsIgnoreCase("reset") && sender.hasPermission("toolstats.reset.confirm")) {
+            return Collections.singletonList("confirm");
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("purge") && sender.hasPermission("toolstats.purge.confirm")) {
             return Collections.singletonList("confirm");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("edit") && sender.hasPermission("toolstats.edit")) {

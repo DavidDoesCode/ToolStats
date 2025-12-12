@@ -20,17 +20,13 @@ package lol.hyper.toolstats.events;
 import lol.hyper.hyperlib.datatypes.UUIDDataType;
 import lol.hyper.toolstats.ToolStats;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.LootGenerateEvent;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.event.block.BlockDispenseLootEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -39,51 +35,47 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
-public class GenerateLoot implements Listener {
+public class BlockDispenseEvent implements Listener {
 
     private final ToolStats toolStats;
 
-    public GenerateLoot(ToolStats toolStats) {
+    public BlockDispenseEvent(ToolStats toolStats) {
         this.toolStats = toolStats;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onGenerateLoot(LootGenerateEvent event) {
-        InventoryHolder inventoryHolder = event.getInventoryHolder();
-        if (inventoryHolder == null) {
+    public void onDispense(BlockDispenseLootEvent event) {
+        Player player = event.getPlayer();
+
+        if (player == null) {
             return;
         }
-        Location lootLocation = event.getLootContext().getLocation();
 
-        if (inventoryHolder instanceof Chest) {
-            Block openedChest = null;
-            // look at the current list of opened chest and get the distance
-            // between the LootContext location and chest location
-            // if the distance is less than 1, it's the same chest
-            for (Block chest : toolStats.playerInteract.openedChests.keySet()) {
-                Location chestLocation = chest.getLocation();
-                if (chest.getWorld() == lootLocation.getWorld()) {
-                    double distance = lootLocation.distance(chestLocation);
-                    if (distance <= 1.0) {
-                        openedChest = chest;
-                    }
-                }
-            }
-            // ignore if the chest is not in the same location
-            if (openedChest == null) {
-                return;
+        if (player.getGameMode() == GameMode.CREATIVE && !toolStats.config.getBoolean("allow-creative")) {
+            return;
+        }
+
+        List<ItemStack> loot = event.getDispensedLoot();
+        // probably won't ever happen
+        if (loot.isEmpty()) {
+            return;
+        }
+
+        List<ItemStack> newLoot = new ArrayList<>();
+        for (ItemStack lootItem : loot) {
+            ItemStack newLootItem = lootItem.clone();
+            Material lootItemMaterial = newLootItem.getType();
+            // if the item is one we want, do stuff
+            if (toolStats.itemChecker.isValidItem(lootItemMaterial)) {
+                newLootItem = addLootedOrigin(newLootItem, player);
             }
 
-            Player player = toolStats.playerInteract.openedChests.get(openedChest);
-            setLoot(event.getLoot(), player);
+            // if the item returned null, add the original item
+            newLoot.add(Objects.requireNonNullElse(newLootItem, lootItem));
         }
-        if (inventoryHolder instanceof StorageMinecart mineCart) {
-            if (toolStats.playerInteract.openedMineCarts.containsKey(mineCart)) {
-                Player player = toolStats.playerInteract.openedMineCarts.get(mineCart);
-                setLoot(event.getLoot(), player);
-            }
-        }
+        event.setDispensedLoot(newLoot);
     }
 
     /**
@@ -145,27 +137,5 @@ public class GenerateLoot implements Listener {
 
         newItem.setItemMeta(meta);
         return newItem;
-    }
-
-    /**
-     * Add tags to the generated loot.
-     *
-     * @param loot   The loot from the event.
-     * @param player The player triggering the event.
-     */
-    private void setLoot(List<ItemStack> loot, Player player) {
-        for (int i = 0; i < loot.size(); i++) {
-            ItemStack itemStack = loot.get(i);
-            // ignore air
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            if (toolStats.itemChecker.isValidItem(itemStack.getType())) {
-                ItemStack newItem = addLootedOrigin(itemStack, player);
-                if (newItem != null) {
-                    loot.set(i, newItem);
-                }
-            }
-        }
     }
 }

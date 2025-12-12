@@ -43,21 +43,20 @@ public class Version13 {
         try {
             toolStats.config.save("plugins" + File.separator + "ToolStats" + File.separator + "config-12.yml");
         } catch (IOException exception) {
-            toolStats.logger.severe("Unable to save config-12.yml!");
-            throw new RuntimeException(exception);
+            toolStats.logger.error("Unable to save config-12.yml!", exception);
         }
 
         toolStats.logger.info("Updating config.yml to version 13.");
         toolStats.config.set("config-version", 13);
 
         for (String key : toolStats.config.getConfigurationSection("tokens.data").getKeys(false)) {
-            toolStats.logger.info("Adding tokens.data." + key + ".material");
+            toolStats.logger.info("Adding tokens.data.{}.material", key);
             toolStats.config.set("tokens.data." + key + ".material", "PAPER");
-            toolStats.logger.info("Adding tokens.data." + key + ".custom-model-data.enabled");
+            toolStats.logger.info("Adding tokens.data.{}.custom-model-data.enabled", key);
             toolStats.config.set("tokens.data." + key + ".custom-model-data.enabled", false);
-            toolStats.logger.info("Adding tokens.data." + key + ".custom-model-data.type");
+            toolStats.logger.info("Adding tokens.data.{}.custom-model-data.type", key);
             toolStats.config.set("tokens.data." + key + ".custom-model-data.type", "float");
-            toolStats.logger.info("Adding tokens.data." + key + ".custom-model-data.value");
+            toolStats.logger.info("Adding tokens.data.{}.custom-model-data.value", key);
             toolStats.config.set("tokens.data." + key + ".custom-model-data.value", 1001);
         }
 
@@ -65,8 +64,7 @@ public class Version13 {
         try {
             toolStats.config.save("plugins" + File.separator + "ToolStats" + File.separator + "config.yml");
         } catch (IOException exception) {
-            toolStats.logger.severe("Unable to save config.yml!");
-            throw new RuntimeException(exception);
+            toolStats.logger.error("Unable to save config.yml!", exception);
         }
         toolStats.loadConfig();
         toolStats.logger.info("Config has been updated to version 13. A copy of version 12 has been saved as config-12.yml");
