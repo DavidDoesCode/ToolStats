@@ -1,5 +1,5 @@
 # Use token system for tracking stats.
-# See https://github.com/hyperdefined/ToolStats/wiki/Token-System
+# See https://docs.hyper.lol/plugins/toolstats/tokens/
 tokens:
   enabled: false
   craft-tokens: true

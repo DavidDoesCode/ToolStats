@@ -64,4 +64,4 @@ You can see some of the stats below as examples:
 Visit the [wiki](https://docs.hyper.lol/plugins/toolstats/about/) for help.
 
 ## License
-This plugin is released under GNU General Public License v3. See [LICENSE](https://github.com/hyperdefined/ToolStats/blob/master/LICENSE).
+This plugin is released under GNU General Public License v3. See [LICENSE](https://codeberg.org/hyperdefined/ToolStats/src/branch/master/LICENSE).

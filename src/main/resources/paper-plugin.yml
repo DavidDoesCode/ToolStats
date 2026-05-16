@@ -5,7 +5,7 @@ api-version: '26.1.1'
 folia-supported: true
 author: hyperdefined
 description: Track various tool stats!
-website: https://github.com/hyperdefined/ToolStats
+website: https://docs.hyper.lol/plugins/toolstats/about/
 
 loader: lol.hyper.toolstats.ToolStatsLoader
 
