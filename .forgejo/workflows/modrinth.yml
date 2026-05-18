@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-fat
     steps:
     - uses: actions/checkout@v6
-    - uses: https://github.com/funnyboy-roks/modrinth-auto-desc@v1.6
+    - uses: https://github.com/funnyboy-roks/modrinth-auto-desc@v1.7
       with:
         auth-token: ${{ secrets.MODRINTH }}
         slug: 'oBZj9E15'
