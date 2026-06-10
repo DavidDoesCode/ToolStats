@@ -16,11 +16,11 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("dev.rosewood:rosestacker:1.5.41")
-    compileOnly("org.codeberg.hyperdefined:hyperlib:1.0.15:all")
+    compileOnly("org.codeberg.hyperdefined:hyperlib:1.0.16:all")
 }
 
 group = "lol.hyper"
-version = "2.0.5"
+version = "2.0.6"
 description = "ToolStats"
 java.sourceCompatibility = JavaVersion.VERSION_25
 
