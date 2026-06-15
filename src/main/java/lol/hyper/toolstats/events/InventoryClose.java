@@ -21,7 +21,6 @@ import lol.hyper.hyperlib.datatypes.UUIDDataType;
 import lol.hyper.toolstats.ToolStats;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
@@ -107,8 +106,14 @@ public class InventoryClose implements Listener {
             }
 
             if (holder instanceof Container) {
-                Chunk chestChunk = chestLocation.getChunk();
-                Bukkit.getRegionScheduler().runDelayed(toolStats, chestLocation.getWorld(), chestChunk.getX(), chestChunk.getZ(), scheduledTask -> {
+                // Derive chunk coordinates from the block position instead of calling
+                // Location#getChunk(). On Folia this event runs on the player's region thread,
+                // but the chest may live in a different region; getChunk() would force a
+                // synchronous cross-region chunk load and fail the thread check. The region
+                // scheduler only needs chunk coordinates and will run on the owning thread.
+                int chestChunkX = chestLocation.getBlockX() >> 4;
+                int chestChunkZ = chestLocation.getBlockZ() >> 4;
+                Bukkit.getRegionScheduler().runDelayed(toolStats, chestLocation.getWorld(), chestChunkX, chestChunkZ, scheduledTask -> {
                     BlockState blockState = chestLocation.getWorld().getBlockAt(chestLocation).getState();
                     if (blockState instanceof InventoryHolder chest) {
                         Inventory chestInventory = chest.getInventory();

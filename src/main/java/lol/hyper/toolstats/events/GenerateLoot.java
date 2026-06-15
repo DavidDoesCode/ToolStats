@@ -19,7 +19,6 @@ package lol.hyper.toolstats.events;
 
 import lol.hyper.toolstats.ToolStats;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Container;
@@ -56,8 +55,9 @@ public class GenerateLoot implements Listener {
         if (!toolStats.configTools.checkWorld(lootLocation.getWorld().getName())) {
             return;
         }
-        Chunk lootChunk = lootLocation.getChunk();
-        Bukkit.getRegionScheduler().runDelayed(toolStats, lootLocation.getWorld(), lootChunk.getX(), lootChunk.getZ(), scheduledTask -> {
+        int lootChunkX = lootLocation.getBlockX() >> 4;
+        int lootChunkZ = lootLocation.getBlockZ() >> 4;
+        Bukkit.getRegionScheduler().runDelayed(toolStats, lootLocation.getWorld(), lootChunkX, lootChunkZ, scheduledTask -> {
             if (inventoryHolder instanceof Container) {
                 Block openedChest = null;
                 Location chestLocation = null;

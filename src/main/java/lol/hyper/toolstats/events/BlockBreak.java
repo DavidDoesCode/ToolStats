@@ -108,8 +108,9 @@ public class BlockBreak implements Listener {
         }
 
         Location eventLocation = event.getBlock().getLocation();
-        Chunk eventChunk = eventLocation.getChunk();
-        Bukkit.getRegionScheduler().runDelayed(toolStats, eventLocation.getWorld(), eventChunk.getX(), eventChunk.getZ(), scheduledTask -> {
+        int eventChunkX = eventLocation.getBlockX() >> 4;
+        int eventChunkZ = eventLocation.getBlockZ() >> 4;
+        Bukkit.getRegionScheduler().runDelayed(toolStats, eventLocation.getWorld(), eventChunkX, eventChunkZ, scheduledTask -> {
             boolean validLootDrops = false;
             for (Location droppedLootLocation : toolStats.generateLoot.droppedLootLocations) {
                 if (eventLocation.getWorld() == droppedLootLocation.getWorld()) {

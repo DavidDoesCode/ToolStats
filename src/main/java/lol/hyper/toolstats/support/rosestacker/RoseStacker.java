@@ -21,7 +21,6 @@ import dev.rosewood.rosestacker.api.RoseStackerAPI;
 import dev.rosewood.rosestacker.stack.StackedEntity;
 import lol.hyper.toolstats.ToolStats;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
@@ -58,9 +57,10 @@ public class RoseStacker {
         }
 
         Location stackedLocation = stackedEntity.getLocation();
-        Chunk stackedChunk = stackedEntity.getLocation().getChunk();
+        int stackedChunkX = stackedLocation.getBlockX() >> 4;
+        int stackedChunkZ = stackedLocation.getBlockZ() >> 4;
         // check the stack size after a tick to see the difference
-        Bukkit.getRegionScheduler().runDelayed(toolStats, stackedLocation.getWorld(), stackedChunk.getX(), stackedChunk.getZ(), _ -> {
+        Bukkit.getRegionScheduler().runDelayed(toolStats, stackedLocation.getWorld(), stackedChunkX, stackedChunkZ, _ -> {
             int after = stackedEntity.getStackSize();
             int difference = before - after;
             // if the diff goes negative, we killed more than the stack
