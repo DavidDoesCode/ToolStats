@@ -93,15 +93,7 @@ public class PlayerInteract implements Listener {
 
             ItemMeta newAxe = toolStats.itemLore.updateLogsStripped(axe, 1);
             if (newAxe != null) {
-                boolean isMain = playerInventory.getItemInMainHand().getType().toString().endsWith("_AXE");
-                boolean isOffHand = playerInventory.getItemInOffHand().getType().toString().endsWith("_AXE");
-                if (isMain && isOffHand) {
-                    playerInventory.getItemInMainHand().setItemMeta(newAxe);
-                } else if (isMain) {
-                    playerInventory.getItemInMainHand().setItemMeta(newAxe);
-                } else if (isOffHand) {
-                    playerInventory.getItemInOffHand().setItemMeta(newAxe);
-                }
+                axe.setItemMeta(newAxe);
             }
         }
     }

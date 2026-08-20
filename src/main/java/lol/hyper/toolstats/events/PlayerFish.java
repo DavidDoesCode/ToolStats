@@ -70,16 +70,7 @@ public class PlayerFish implements Listener {
         // update the fishing rod!
         ItemMeta newFishingRod = toolStats.itemLore.updateFishCaught(fishingRod, 1);
         if (newFishingRod != null) {
-            PlayerInventory inventory = player.getInventory();
-            boolean isMain = inventory.getItemInMainHand().getType() == Material.FISHING_ROD;
-            boolean isOffHand = inventory.getItemInOffHand().getType() == Material.FISHING_ROD;
-            if (isMain && isOffHand) {
-                inventory.getItemInMainHand().setItemMeta(newFishingRod);
-            } else if (isMain) {
-                inventory.getItemInMainHand().setItemMeta(newFishingRod);
-            } else if (isOffHand) {
-                inventory.getItemInOffHand().setItemMeta(newFishingRod);
-            }
+            fishingRod.setItemMeta(newFishingRod);
         }
 
         // check if the player caught an item

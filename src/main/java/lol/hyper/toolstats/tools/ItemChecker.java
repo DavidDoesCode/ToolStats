@@ -336,6 +336,35 @@ public class ItemChecker {
     }
 
     /**
+     * Get the player's shield.
+     *
+     * @param inventory Their inventory.
+     * @return Their shield, either main or offhand.
+     */
+    public @Nullable ItemStack getShield(PlayerInventory inventory) {
+        ItemStack main = inventory.getItemInMainHand();
+        ItemStack offHand = inventory.getItemInOffHand();
+
+        boolean isMain = main.getType() == Material.SHIELD;
+        boolean isOffHand = offHand.getType() == Material.SHIELD;
+
+        // if the player is holding a shield in their main hand, use that one
+        // if the shield is in their offhand instead, use that one after checking main hand
+        // Minecraft prioritizes main hand if the player holds in both hands
+        if (isMain && isOffHand) {
+            return main;
+        }
+        if (isMain) {
+            return main;
+        }
+        if (isOffHand) {
+            return offHand;
+        }
+
+        return null;
+    }
+
+    /**
      * Checks the keys of the item and returns the tokens we should add.
      * If the server swaps token systems this should allow compatability.
      *

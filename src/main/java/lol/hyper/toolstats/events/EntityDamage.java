@@ -390,43 +390,18 @@ public class EntityDamage implements Listener {
     }
 
     private void updateShieldDamage(PlayerInventory playerInventory, double damage) {
-        boolean isMain = playerInventory.getItemInMainHand().getType() == Material.SHIELD;
-        boolean isOffHand = playerInventory.getItemInOffHand().getType() == Material.SHIELD;
+        ItemStack heldShield = toolStats.itemChecker.getShield(playerInventory);
+        if (heldShield == null) {
+            return;
+        }
 
-        ItemStack heldShield;
-        if (isMain && isOffHand) {
-            heldShield = playerInventory.getItemInMainHand();
-            int shieldDamage = (heldShield.getItemMeta() instanceof Damageable d) ? d.getDamage() : 0;
-
-            ItemMeta newShieldMeta = toolStats.itemLore.updateArmorDamage(heldShield, damage, false);
-            if (newShieldMeta != null) {
-                if (newShieldMeta instanceof Damageable dNew) {
-                    dNew.setDamage(shieldDamage);
-                }
-                playerInventory.getItemInMainHand().setItemMeta(newShieldMeta);
+        int shieldDamage = (heldShield.getItemMeta() instanceof Damageable d) ? d.getDamage() : 0;
+        ItemMeta newShieldMeta = toolStats.itemLore.updateArmorDamage(heldShield, damage, false);
+        if (newShieldMeta != null) {
+            if (newShieldMeta instanceof Damageable dNew) {
+                dNew.setDamage(shieldDamage);
             }
-        } else if (isMain) {
-            heldShield = playerInventory.getItemInMainHand();
-            int shieldDamage = (heldShield.getItemMeta() instanceof Damageable d) ? d.getDamage() : 0;
-
-            ItemMeta newShieldMeta = toolStats.itemLore.updateArmorDamage(heldShield, damage, false);
-            if (newShieldMeta != null) {
-                if (newShieldMeta instanceof Damageable dNew) {
-                    dNew.setDamage(shieldDamage);
-                }
-                playerInventory.getItemInMainHand().setItemMeta(newShieldMeta);
-            }
-        } else if (isOffHand) {
-            heldShield = playerInventory.getItemInOffHand();
-            int shieldDamage = (heldShield.getItemMeta() instanceof Damageable d) ? d.getDamage() : 0;
-
-            ItemMeta newShieldMeta = toolStats.itemLore.updateArmorDamage(heldShield, damage, false);
-            if (newShieldMeta != null) {
-                if (newShieldMeta instanceof Damageable dNew) {
-                    dNew.setDamage(shieldDamage);
-                }
-                playerInventory.getItemInOffHand().setItemMeta(newShieldMeta);
-            }
+            playerInventory.getItemInMainHand().setItemMeta(newShieldMeta);
         }
     }
 }
