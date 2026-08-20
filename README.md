@@ -42,7 +42,6 @@ Here is everything it tracks:
 | Spawned | Spawn a tool in Creative mode              |
 | Traded  | Trade for a tool                           |
 
-
 The best part is, this data is stored on the item itself.
 
 This plugin also has compatibility for:
