@@ -41,9 +41,6 @@ public class SheepShear implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onShear(PlayerInteractEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         Player player = event.getPlayer();
         if (!toolStats.configTools.checkWorld(player.getWorld().getName())) {
             return;
