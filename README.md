@@ -14,19 +14,34 @@ ToolStats is a Paper plugin that displays various stats about tools. This plugin
 
 Here is everything it tracks:
 
-* Blocks mined (pickaxes, shovels, axes, hoes, shears).
-* Crops harvested (hoes).
-* Player/mob kills (swords, axes, tridents, bows/crossbows, mace).
-* Ownership of items when crafted, looted (from chests/vaults/barrels), traded, spawned via creative, and caught from fishing.
-* Armor damage taken (shields too).
-* Damage done with weapons.
-* Fish caught.
-* Sheep sheared.
-* Arrows shot (bows/crossbows).
-* Flight time with elytras.
-* Critical strikes for melee weapons.
-* Times trident thrown.
-* Logs stripped.
+| Stat               | Items                                           | Trigger                                    |
+| ------------------ | ----------------------------------------------- | ------------------------------------------ |
+| Arrows shot        | Bow, Crossbow                                   | Shoot an arrow                             |
+| Blocks mined       | Axe, Hoe, Pickaxe, Shears, Shovel               | Mine a block                               |
+| Critical strikes   | Axe, Mace, Spear, Sword, Trident                | Hit a mob or player with a critical strike |
+| Crops harvested    | Hoe                                             | Harvest a crop                             |
+| Damage done        | Axe, Bow, Crossbow, Mace, Spear, Sword, Trident | Damage a mob or player                     |
+| Damage taken       | Armor, Shield                                   | Take or block damage                       |
+| Ender Dragon kills | Axe, Bow, Crossbow, Mace, Spear, Sword, Trident | Kill the Ender Dragon                      |
+| Fish caught        | Fishing Rod                                     | Catch a fish                               |
+| Flight time        | Elytra                                          | Fly with an elytra                         |
+| Logs stripped      | Axe                                             | Strip a log                                |
+| Mob kills          | Axe, Bow, Crossbow, Mace, Spear, Sword, Trident | Kill a mob                                 |
+| Player kills       | Axe, Bow, Crossbow, Mace, Spear, Sword, Trident | Kill a player                              |
+| Sheep sheared      | Shears                                          | Shear a sheep                              |
+| Trident thrown     | Trident                                         | Throw a trident                            |
+| Wither kills       | Axe, Bow, Crossbow, Mace, Spear, Sword, Trident | Kill a Wither                              |
+
+| Origin  | Trigger                                    |
+| ------- | ------------------------------------------ |
+| Caught  | Catch a tool while fishing                 |
+| Crafted | Craft a tool                               |
+| Dropped | Obtain a tool dropped by a killed mob      |
+| Found   | Find an elytra in an End Ship              |
+| Looted  | Loot a tool from a barrel, chest, or vault |
+| Spawned | Spawn a tool in Creative mode              |
+| Traded  | Trade for a tool                           |
+
 
 The best part is, this data is stored on the item itself.
 
