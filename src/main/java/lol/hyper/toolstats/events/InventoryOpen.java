@@ -46,7 +46,6 @@ public class InventoryOpen implements Listener {
     public void onOpen(InventoryOpenEvent event) {
         Inventory inventory = event.getInventory();
         InventoryHolder holder = inventory.getHolder();
-        boolean isBlockInventory = holder instanceof BlockInventoryHolder || holder instanceof DoubleChest;
         if (!(inventory.getHolder() instanceof BlockInventoryHolder)) {
             // ignore not real inventories
             return;
